@@ -42,17 +42,17 @@ void SPI1_Init(void) {
 
 uint8_t SPI1_Transfer(uint8_t data) {
 	while (!(SPI1->SR & SPI_SR_TXE)); // If Tx buff is not empty, wait
-	SPI1->DR = data;
-	while (!(SPI1->SR & SPI_SR_RXNE)); // If Rx buff is not empty, wait
-	return SPI1->DR;
+	*(volatile uint8_t*)&SPI1->DR = data;
+	while (!(SPI1->SR & SPI_SR_RXNE)); // If Rx buff is empty, wait
+	return *(volatile uint8_t *)&SPI1->DR;
 }
 
 void SPI1_CS_Low(void)
 {
-    GPIOA->ODR &= ~(1 << 4);
+	GPIOA->BSRR = (1 << (4 + 16));
 }
 
 void SPI1_CS_High(void)
 {
-    GPIOA->ODR |= (1 << 4);
+	GPIOA->BSRR = (1 << 4);
 }

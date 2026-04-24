@@ -6,10 +6,9 @@
  */
 
 #include "icm20948.h"
+#include "spi.h"
 
 
-#define CS_LOW()  (GPIOA->BSRR = (1<<(4+16)))
-#define CS_HIGH() (GPIOA->BSRR = (1<<4))
 
 void ICM20948_Init(void)
 {
@@ -31,18 +30,23 @@ void ICM20948_Init(void)
 
 static void write_reg(uint8_t reg, uint8_t data)
 {
-    CS_LOW();
+	SPI1_CS_Low();
     SPI1_Transfer(reg & 0x7F);
     SPI1_Transfer(data);
-    CS_HIGH();
+    SPI1_CS_High();
 }
 
 static uint8_t read_reg(uint8_t reg)
 {
     uint8_t val;
-    CS_LOW();
+    SPI1_CS_Low();
     SPI1_Transfer(reg | 0x80);
     val = SPI1_Transfer(0x00);
-    CS_HIGH();
+    SPI1_CS_High();
     return val;
+}
+
+void select_bank(uint8_t bank)
+{
+    write_reg(REG_BANK_SEL, bank << 4);
 }

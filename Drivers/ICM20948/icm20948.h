@@ -10,6 +10,8 @@
 
 #include "stdint.h"
 
+#define REG_BANK_SEL 0x7F
+
 typedef struct {
 
 } icm20948_t;
@@ -17,5 +19,6 @@ typedef struct {
 
 void ICM20948_Init(void);
 uint8_t ICM20948_ReadWhoAmI(void);
+void select_bank(uint8_t bank);
 
 #endif /* ICM20948_ICM20948_H_ */
