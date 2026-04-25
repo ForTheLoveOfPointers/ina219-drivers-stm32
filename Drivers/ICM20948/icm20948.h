@@ -9,6 +9,7 @@
 #define ICM20948_ICM20948_H_
 
 #include "stdint.h"
+#include "stm32f4xx.h"
 
 #define REG_BANK_SEL 0x7F
 

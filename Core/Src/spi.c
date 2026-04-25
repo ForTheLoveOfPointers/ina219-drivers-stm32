@@ -6,10 +6,11 @@
  */
 
 #include "spi.h"
-#include "stm32f4xx.h"
+
 
 /* Takes care of initializing the SPI clock via registers */
 void SPI1_Init(void) {
+	SPI1_Disabled();
 	// Initialize clocks
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
@@ -37,14 +38,28 @@ void SPI1_Init(void) {
 	// SPI config: Master, software NSS, mode 0 (adjust if needed)
 	SPI1->CR1 = SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI;
 	SPI1->CR1 |= SPI_CR1_BR_1;   // prescaler (slow first!)
+
+}
+
+void SPI1_Enabled(void) {
 	SPI1->CR1 |= SPI_CR1_SPE;
 }
 
-uint8_t SPI1_Transfer(uint8_t data) {
+void SPI1_Disabled(void) {
+
+	SPI1->CR1 &= ~SPI_CR1_SPE;
+
+}
+
+void SPI1_Transfer(uint8_t data) {
 	while (!(SPI1->SR & SPI_SR_TXE)); // If Tx buff is not empty, wait
-	*(volatile uint8_t*)&SPI1->DR = data;
+	*((volatile uint8_t*)&SPI1->DR) = data;
+
+}
+
+uint8_t SPI1_Receive(void) {
 	while (!(SPI1->SR & SPI_SR_RXNE)); // If Rx buff is empty, wait
-	return *(volatile uint8_t *)&SPI1->DR;
+	return *((volatile uint8_t *)&SPI1->DR);
 }
 
 void SPI1_CS_Low(void)
