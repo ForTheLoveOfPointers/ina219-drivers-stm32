@@ -20,7 +20,7 @@ void SPI1_Init(void) {
 	GPIOA->MODER |=  ((2<<(5*2))|(2<<(6*2))|(2<<(7*2)));
 
 	// Set GPIOA 4 as CS/SS
-	GPIOA->MODER &= ~(0x3 << (4*2))
+	GPIOA->MODER &= ~(0x3 << (4*2));
 	GPIOA->MODER |= (0x1 << (4*2));
 
 	GPIOA->OTYPER &= ~(1 << 4);      // push-pull

@@ -89,7 +89,7 @@ int main(void)
 
 
   /* USER CODE BEGIN Init */
-  PSI1_Init();
+  SPI1_Init();
   /* USER CODE END Init */
 
   /* Configure the system clock */

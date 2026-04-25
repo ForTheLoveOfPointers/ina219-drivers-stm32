@@ -1,0 +1,4 @@
+../Drivers/ICM20948/icm20948.c:15:6:ICM20948_Init	16	static
+../Drivers/ICM20948/icm20948.c:37:13:write_reg	16	static
+../Drivers/ICM20948/icm20948.c:47:16:read_reg	24	static
+../Drivers/ICM20948/icm20948.c:60:6:select_bank	16	static

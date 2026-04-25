@@ -9,6 +9,8 @@
 #include "spi.h"
 
 
+static void write_reg(uint8_t reg, uint8_t data);
+static uint8_t read_reg(uint8_t reg);
 
 void ICM20948_Init(void)
 {

@@ -1,0 +1,7 @@
+../Core/Src/spi.c:12:6:SPI1_Init	1
+../Core/Src/spi.c:44:6:SPI1_Enabled	1
+../Core/Src/spi.c:48:6:SPI1_Disabled	1
+../Core/Src/spi.c:54:6:SPI1_Transfer	2
+../Core/Src/spi.c:60:9:SPI1_Receive	2
+../Core/Src/spi.c:65:6:SPI1_CS_Low	1
+../Core/Src/spi.c:70:6:SPI1_CS_High	1
