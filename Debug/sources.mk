@@ -26,5 +26,6 @@ Core/Src \
 Core/Startup \
 Drivers/ICM20948/Src \
 Drivers/INA219/Src \
+Drivers/STM-ESP/Src \
 Drivers/STM32F4xx_HAL_Driver/Src \
 

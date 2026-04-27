@@ -10,6 +10,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
+-include Drivers/STM-ESP/Src/subdir.mk
 -include Drivers/INA219/Src/subdir.mk
 -include Drivers/ICM20948/Src/subdir.mk
 -include Core/Startup/subdir.mk
