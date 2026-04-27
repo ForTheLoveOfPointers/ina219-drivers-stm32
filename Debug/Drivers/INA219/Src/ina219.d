@@ -1,5 +1,8 @@
-Drivers/ICM20948/icm20948.o: ../Drivers/ICM20948/icm20948.c \
- ../Drivers/ICM20948/icm20948.h \
+Drivers/INA219/Src/ina219.o: ../Drivers/INA219/Src/ina219.c \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+ ../Core/Inc/stm32f4xx_hal_conf.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h \
  ../Drivers/CMSIS/Include/core_cm4.h \
@@ -8,10 +11,6 @@ Drivers/ICM20948/icm20948.o: ../Drivers/ICM20948/icm20948.c \
  ../Drivers/CMSIS/Include/cmsis_gcc.h \
  ../Drivers/CMSIS/Include/mpu_armv7.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
- ../Core/Inc/stm32f4xx_hal_conf.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h \
@@ -28,8 +27,12 @@ Drivers/ICM20948/icm20948.o: ../Drivers/ICM20948/icm20948.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Core/Inc/spi.h
-../Drivers/ICM20948/icm20948.h:
+ /home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/INA219/Include/ina219.h
+../Core/Inc/main.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
+../Core/Inc/stm32f4xx_hal_conf.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h:
 ../Drivers/CMSIS/Include/core_cm4.h:
@@ -38,10 +41,6 @@ Drivers/ICM20948/icm20948.o: ../Drivers/ICM20948/icm20948.c \
 ../Drivers/CMSIS/Include/cmsis_gcc.h:
 ../Drivers/CMSIS/Include/mpu_armv7.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
-../Core/Inc/stm32f4xx_hal_conf.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h:
@@ -58,4 +57,4 @@ Drivers/ICM20948/icm20948.o: ../Drivers/ICM20948/icm20948.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-../Core/Inc/spi.h:
+/home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/INA219/Include/ina219.h:

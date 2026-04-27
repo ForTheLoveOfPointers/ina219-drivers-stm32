@@ -1,7 +1,6 @@
 ../Core/Src/spi.c:12:6:SPI1_Init	8	static
-../Core/Src/spi.c:44:6:SPI1_Enabled	4	static
-../Core/Src/spi.c:48:6:SPI1_Disabled	4	static
-../Core/Src/spi.c:54:6:SPI1_Transfer	16	static
-../Core/Src/spi.c:60:9:SPI1_Receive	4	static
+../Core/Src/spi.c:47:6:SPI1_Enabled	4	static
+../Core/Src/spi.c:51:6:SPI1_Disabled	4	static
+../Core/Src/spi.c:57:9:SPI1_Transfer	16	static
 ../Core/Src/spi.c:65:6:SPI1_CS_Low	4	static
 ../Core/Src/spi.c:70:6:SPI1_CS_High	4	static

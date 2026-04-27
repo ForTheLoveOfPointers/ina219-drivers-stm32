@@ -1,0 +1,5 @@
+../Drivers/ICM20948/Src/icm20948.c:17:6:ICM20948_Init	16	static
+../Drivers/ICM20948/Src/icm20948.c:102:6:read_gyro	56	static
+../Drivers/ICM20948/Src/icm20948.c:133:13:write_reg	16	static
+../Drivers/ICM20948/Src/icm20948.c:143:16:read_reg	24	static
+../Drivers/ICM20948/Src/icm20948.c:157:6:select_bank	16	static

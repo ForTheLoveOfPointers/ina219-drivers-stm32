@@ -12,8 +12,7 @@
 #include "stm32f4xx.h"
 
 void SPI1_Init(void);
-void SPI1_Transfer(uint8_t data);
-uint8_t SPI1_Receive(void);
+uint8_t SPI1_Transfer(uint8_t data);
 
 void SPI1_Enabled(void);
 void SPI1_Disabled(void);

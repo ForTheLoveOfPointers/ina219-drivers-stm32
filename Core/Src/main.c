@@ -23,7 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
-#include <spi.h>
+#include <icm20948.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +57,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 void read_ina(I2C_HandleTypeDef *hi2c, uint8_t read_register, uint8_t *pData, uint16_t Size, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg);
-void write_ina(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t Size, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg);
+void write_ina(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg);
 
 /* USER CODE END PFP */
 
@@ -74,12 +74,15 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	HAL_StatusTypeDef ret;
+	HAL_StatusTypeDef ret = HAL_OK;
+	uint8_t tty_buf[100];
 	uint8_t data[2];
-	uint8_t write_data[3]; // Used for writing to registers
-	uint8_t tty_buf[16];
 
-	strcpy((char*)tty_buf, "FINISHED");
+	float lsb_constant = 0.004f;
+	float current_lsb = 0.00002f;
+
+	strcpy((char*)tty_buf, "Finished program");
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -87,9 +90,8 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-
   /* USER CODE BEGIN Init */
-  SPI1_Init();
+  Ina219_Init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -110,81 +112,84 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  // Set configuration register
-  //----------------------------------------
-  //  INA SPECS
-  //  ---------
-  //  32V bus range
-  //  ±320 mV shunt range (max flexibility)
-  //  12-bit ADC
-  //  Continuous measurement mode
-  //----------------------------------------
+  HAL_Delay(2000);
 
-  uint8_t config_buf[3] = {0x00, 0x39, 0x9f};
-  ret = HAL_I2C_Master_Transmit(&hi2c1, INA_ADDRESS, config_buf, 3, 500);
+  /* CONFIGURE INA219 */
+  /*
+
+  uint8_t ina_write_data[3] = {0x00, 0x01, 0x9F};
+
+  write_ina(&hi2c1, ina_write_data, 500, ret, tty_buf);
   if(ret != HAL_OK) {
-  	  return -1;
+	strcpy((char*)tty_buf, "Error setting configuration register");
+	HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
+	return -1;
   }
 
 
-  // Set calibration register
-  //----------------------------------------
-  //  INA SPECS
-  //  ---------
-  //  32V bus range
-  //  ±320 mV shunt range (max flexibility)
-  //  12-bit ADC
-  //  Continuous measurement mode
-  //----------------------------------------
-
-  float max_current = 1.5f; // 1.5 amperes
-  float shunt_res = 0.1f; // 0.1 ohms
-
-  double current_lsb = max_current / 32767; // The 16 bit register has 15 usable bits, thus 32767 = 2^15 -1
-  uint64_t cal = 0.04096 / (current_lsb * shunt_res);
-
-  write_data[0] = 0x05;
-  write_data[1] = cal >> 8;
-  write_data[0] = cal & 0xFF;
-  ret = HAL_I2C_Master_Transmit(&hi2c1, INA_ADDRESS, write_data, 3, 500);
+  ina_write_data[0] = 0x05;
+  ina_write_data[1] =  0x50;
+  ina_write_data[2] = 0x00;
+  write_ina(&hi2c1, ina_write_data, 500, ret, tty_buf);
   if(ret != HAL_OK) {
+	  strcpy((char*)tty_buf, "Error setting calibration register");
+	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
 	  return -1;
   }
-
-
+  */
 
   uint16_t raw_data;
-  float lsb_constant = 0.004f;
   while (1)
   {
+	  /*
+
+	  // Read from SHUNT-VOLTAGE register
+	  //
+	  //
+	  read_ina(&hi2c1, 0x01, data, 2, 500, ret, tty_buf);
+	  if(ret != HAL_OK)
+		  break;
+	  int16_t shunt_data = (int16_t)((data[0] << 8) | data[1]);
+	  double shunt_voltage = (shunt_data) * 0.0000025f;
+	  sprintf((char*)tty_buf, "Shunt:%.2g\n", shunt_voltage);
+	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
 	  // Read from BUS-VOLTAGE register
 	  //
 	  //
+
 	  read_ina(&hi2c1, 0x02, data, 2, 500, ret, tty_buf);
 	  if(ret != HAL_OK)
 		  break;
 
 	  raw_data = (data[0] << 8) | data[1];
 	  double bus_voltage = (raw_data >> 3) * lsb_constant;
-	  if((raw_data & 1) == 1) {
+
+	  if((raw_data & 0x01) == 0x01) {
 		  strcpy((char*)tty_buf, "OVF Flag Set!");
 		  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
 		  continue;
 	  }
+
 
 	  // Read from CURRENT register
 	  //
 	  //
 	  read_ina(&hi2c1, 0x04, data, 2, 500, ret, tty_buf);
 	  if(ret != HAL_OK)
-		  break;
+		  continue;
 
-	  raw_data = (data[0] << 8) | data[1];
-	  double current = raw_data * current_lsb;
+	  int16_t curr_data = (int16_t) ((data[0] << 8) | data[1]);
+	  double current = curr_data * current_lsb;
 
 	  sprintf((char*)tty_buf, "BV:%.2g | I:%.5g", bus_voltage, current);
 	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-	  HAL_Delay(200);
+	   */
+	  float current = Ina219_ReadCurrent();
+
+	  sprintf((char*)tty_buf, " | I:%.5g\n", current);
+	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
+
+	  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -324,21 +329,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -359,8 +354,8 @@ void read_ina(I2C_HandleTypeDef *hi2c, uint8_t read_register, uint8_t *pData, ui
 	}
 }
 
-void write_ina(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t Size, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg) {
-	ret = HAL_I2C_Master_Transmit(hi2c, INA_ADDRESS, pData, Size, Timeout);
+void write_ina(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg) {
+	ret = HAL_I2C_Master_Transmit(hi2c, INA_ADDRESS, pData, 3, Timeout); // First byte is register addr, then 2 bytes of data
 	if(ret != HAL_OK) {
 		uint8_t reg_write = pData[0];
 		sprintf((char*)err_msg, "%02xREG Tx ERR", (unsigned int)reg_write);

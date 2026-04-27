@@ -1,4 +1,0 @@
-../Drivers/ICM20948/icm20948.c:15:6:ICM20948_Init	2
-../Drivers/ICM20948/icm20948.c:37:13:write_reg	2
-../Drivers/ICM20948/icm20948.c:47:16:read_reg	2
-../Drivers/ICM20948/icm20948.c:60:6:select_bank	1

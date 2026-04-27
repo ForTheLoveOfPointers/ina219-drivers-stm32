@@ -19,6 +19,8 @@ void SPI1_Init(void) {
 	GPIOA->MODER &= ~((3<<(5*2))|(3<<(6*2))|(3<<(7*2)));
 	GPIOA->MODER |=  ((2<<(5*2))|(2<<(6*2))|(2<<(7*2)));
 
+	GPIOA->OSPEEDR |= (3<<(5*2)) | (3<<(6*2)) | (3<<(7*2));
+
 	// Set GPIOA 4 as CS/SS
 	GPIOA->MODER &= ~(0x3 << (4*2));
 	GPIOA->MODER |= (0x1 << (4*2));
@@ -37,7 +39,8 @@ void SPI1_Init(void) {
 
 	// SPI config: Master, software NSS, mode 0 (adjust if needed)
 	SPI1->CR1 = SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI;
-	SPI1->CR1 |= SPI_CR1_BR_1;   // prescaler (slow first!)
+	SPI1->CR1 &= ~SPI_CR1_BR;
+	SPI1->CR1 |= SPI_CR1_BR_2 | SPI_CR1_BR_1;
 
 }
 
@@ -51,16 +54,13 @@ void SPI1_Disabled(void) {
 
 }
 
-void SPI1_Transfer(uint8_t data) {
+uint8_t SPI1_Transfer(uint8_t data) {
 	while (!(SPI1->SR & SPI_SR_TXE)); // If Tx buff is not empty, wait
 	*((volatile uint8_t*)&SPI1->DR) = data;
-
+	while (!(SPI1->SR & SPI_SR_RXNE));
+	return *((volatile uint8_t*)&SPI1->DR);
 }
 
-uint8_t SPI1_Receive(void) {
-	while (!(SPI1->SR & SPI_SR_RXNE)); // If Rx buff is empty, wait
-	return *((volatile uint8_t *)&SPI1->DR);
-}
 
 void SPI1_CS_Low(void)
 {
