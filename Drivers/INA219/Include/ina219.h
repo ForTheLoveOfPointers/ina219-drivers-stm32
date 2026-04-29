@@ -69,7 +69,7 @@ uint8_t Ina219_Init(void);
 uint16_t Ina219_ReadBusVoltage(void);
 float Ina219_ReadCurrent(void);
 int16_t Ina219_ReadCurrent_raw(void);
-uint16_t Ina219_ReadShuntVolage(void);
+uint16_t Ina219_ReadShuntVoltage(void);
 
 void Ina219_Reset(void);
 void Ina219_setCalibration(uint16_t CalibrationData);

@@ -23,7 +23,9 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
-#include <icm20948.h>
+#include "icm20948.h"
+#include "ina219.h"
+#include "espuartproto.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,8 +60,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void read_ina(I2C_HandleTypeDef *hi2c, uint8_t read_register, uint8_t *pData, uint16_t Size, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg);
-void write_ina(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg);
+void cast_int16(uint8_t* buf, int16_t data);
+void cast_uint16(uint8_t* buf, uint16_t data);
 
 /* USER CODE END PFP */
 
@@ -78,7 +80,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	HAL_StatusTypeDef ret = HAL_OK;
 	uint8_t tty_buf[100];
-	uint8_t data[2];
+
 
 	float lsb_constant = 0.004f;
 	float current_lsb = 0.00002f;
@@ -141,58 +143,31 @@ int main(void)
   }
   */
 
-  uint16_t raw_data;
   while (1)
   {
-	  /*
 
-	  // Read from SHUNT-VOLTAGE register
-	  //
-	  //
-	  read_ina(&hi2c1, 0x01, data, 2, 500, ret, tty_buf);
-	  if(ret != HAL_OK)
-		  break;
-	  int16_t shunt_data = (int16_t)((data[0] << 8) | data[1]);
-	  double shunt_voltage = (shunt_data) * 0.0000025f;
-	  sprintf((char*)tty_buf, "Shunt:%.2g\n", shunt_voltage);
-	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-	  // Read from BUS-VOLTAGE register
-	  //
-	  //
+	  uint8_t ina_power_buffer[4]; // Stores bus voltage and current data, in that order
 
-	  read_ina(&hi2c1, 0x02, data, 2, 500, ret, tty_buf);
-	  if(ret != HAL_OK)
-		  break;
+	  uint16_t raw_bv = Ina219_ReadBusVoltage();
+	  int16_t raw_current = Ina219_ReadCurrent_raw();
 
-	  raw_data = (data[0] << 8) | data[1];
-	  double bus_voltage = (raw_data >> 3) * lsb_constant;
+	  espuart_t espuart = {
+			  .type = TYPE_POWER,
+			  .len = sizeof(ina_power_buffer),
+	  };
 
-	  if((raw_data & 0x01) == 0x01) {
-		  strcpy((char*)tty_buf, "OVF Flag Set!");
+	  cast_uint16(ina_power_buffer, raw_bv);
+	  cast_int16(&ina_power_buffer[2], raw_current);
+
+	  espuart.payload = ina_power_buffer;
+	  HAL_StatusTypeDef ina_tx_status = ESPUART_Transmit(&espuart);
+	  if(ina_tx_status != HAL_OK) {
+		  sprintf((char*)tty_buf, "Problems in UART sensor data. Status %d", ina_tx_status);
 		  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-		  continue;
 	  }
 
 
-	  // Read from CURRENT register
-	  //
-	  //
-	  read_ina(&hi2c1, 0x04, data, 2, 500, ret, tty_buf);
-	  if(ret != HAL_OK)
-		  continue;
-
-	  int16_t curr_data = (int16_t) ((data[0] << 8) | data[1]);
-	  double current = curr_data * current_lsb;
-
-	  sprintf((char*)tty_buf, "BV:%.2g | I:%.5g", bus_voltage, current);
-	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-	   */
-	  float current = Ina219_ReadCurrent();
-
-	  sprintf((char*)tty_buf, " | I:%.5g\n", current);
-	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-
-	  HAL_Delay(500);
+	  HAL_Delay(1500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -377,26 +352,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void read_ina(I2C_HandleTypeDef *hi2c, uint8_t read_register, uint8_t *pData, uint16_t Size, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg) {
-	ret = HAL_I2C_Master_Transmit(hi2c, INA_ADDRESS, &read_register, 1, 500);
-	if(ret != HAL_OK) {
-		sprintf((char*)err_msg, "%02xREG Tx ERR", (unsigned int)read_register);
-		return;
-	}
-	ret = HAL_I2C_Master_Receive(hi2c, INA_ADDRESS, pData, Size, Timeout);
-	if(ret != HAL_OK) {
-		sprintf((char*)err_msg, "%02xREG Rx ERR", (unsigned int)read_register);
-		return;
-	}
+
+void cast_int16(uint8_t* buf, int16_t data) {
+	buf[0] = (uint8_t)((data >> 8) & 0xFF); // MSB
+	buf[1] = (uint8_t)(data & 0xFF); // LSB
 }
 
-void write_ina(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint32_t Timeout, HAL_StatusTypeDef ret, uint8_t *err_msg) {
-	ret = HAL_I2C_Master_Transmit(hi2c, INA_ADDRESS, pData, 3, Timeout); // First byte is register addr, then 2 bytes of data
-	if(ret != HAL_OK) {
-		uint8_t reg_write = pData[0];
-		sprintf((char*)err_msg, "%02xREG Tx ERR", (unsigned int)reg_write);
-		return;
-	}
+void cast_uint16(uint8_t* buf, uint16_t data) {
+	buf[0] = (uint8_t)((data >> 8) & 0xFF); // MSB
+	buf[1] = (uint8_t)(data & 0xFF); // LSB
 }
 
 /* USER CODE END 4 */

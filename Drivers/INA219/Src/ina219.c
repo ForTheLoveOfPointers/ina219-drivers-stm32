@@ -56,7 +56,7 @@ float Ina219_ReadCurrent(void)
 	return (result /(float) ina219_currentDivider_mA );
 }
 
-uint16_t Ina219_ReadShuntVolage(void)
+uint16_t Ina219_ReadShuntVoltage(void)
 {
 	uint16_t result = Read16(INA219_REG_SHUNTVOLTAGE);
 

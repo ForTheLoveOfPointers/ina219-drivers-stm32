@@ -11,7 +11,8 @@
  *                																													   |
  * The FRAME FORMAT is the following:																						           |
  *																																	   |
- * START BYTE | TYPE | LEN | PAYLOAD | CHECKSUM | END BYTE 																			   |
+ * START BYTE | TYPE | LEN | PAYLOAD | CHECKSUM | END BYTE 	 ------ This is transmit                                                   |
+ * START BYTE | TYPE=ACK | LEN=0 | CHECKSUM | END BYTE   ------ This is ACK												               |
  *																																	   |
  * Where:																															   |
  *																																	   |
@@ -22,11 +23,12 @@
  *																																	   |
  * TYPE = 0x01  -> Is gyroscope data from the ICM20948																		           |
  * TYPE = 0x02  -> Power data from the INA219. Contains bus voltage and current readings, both 2 bytes in length, in that order.       |
- * TYPE = 0x03  -> Send gyro and power data in the same frame																	       |
+ * TYPE = 0x03  -> Send gyro and power data in the same frame                                                                          |
+ * TYPE = 0x04  -> This is the type the Tx receives when the slave gets the data. The slave should send this immediately after		   |
  *																															           |
  * LEN is a 1 byte field, containing the length of the payload.																	       |
  * PAYLOAD is the sensor data, up to 256 bytes																						   |
- * CHECKSUM has a length of 1 byte, and is computed by XORing START ^ TYPE ^ LEN ^ PAYLOAD																		   |
+ * CHECKSUM has a length of 1 byte, and is computed by XORing START ^ TYPE ^ LEN ^ PAYLOAD											   |
  * -------------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -35,16 +37,23 @@
 
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "stm32f4xx_hal.h"
 
+#define MAX_FRAME_SIZE 15
 #define START_BYTE 0xAA
 #define END_BYTE 0x55
 
 #define TYPE_IMU   0x01
 #define TYPE_POWER 0x02
 #define TYPE_ALL 0x03
+#define TYPE_ACK 0x04
+
+#define ACK_SIZE 5
+#define ACK_TIMEOUT 2000
 
 #define ESPUART huart1
+
 
 typedef struct {
 	uint8_t type;
@@ -57,6 +66,9 @@ typedef struct {
 extern UART_HandleTypeDef ESPUART;
 
 HAL_StatusTypeDef ESPUART_Transmit(espuart_t *espuart);
+HAL_StatusTypeDef ESPUART_Recieve(uint8_t *buffer, uint8_t size);
+
 void ESPUART_Checksum(espuart_t *espuart);
+bool ESPUART_VerifyCheksum(uint8_t *frame_buff, uint8_t sz);
 
 #endif /* STM_ESP_INCLUDE_ESPUARTPROTO_H_ */

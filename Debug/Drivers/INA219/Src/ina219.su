@@ -3,7 +3,7 @@
 ../Drivers/INA219/Src/ina219.c:37:10:Ina219_ReadBusVoltage	16	static
 ../Drivers/INA219/Src/ina219.c:45:9:Ina219_ReadCurrent_raw	16	static
 ../Drivers/INA219/Src/ina219.c:52:7:Ina219_ReadCurrent	16	static
-../Drivers/INA219/Src/ina219.c:59:10:Ina219_ReadShuntVolage	16	static
+../Drivers/INA219/Src/ina219.c:59:10:Ina219_ReadShuntVoltage	16	static
 ../Drivers/INA219/Src/ina219.c:66:6:Ina219_Reset	8	static
 ../Drivers/INA219/Src/ina219.c:72:6:Ina219_setCalibration	16	static
 ../Drivers/INA219/Src/ina219.c:77:10:Ina219_getConfig	16	static

@@ -28,7 +28,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  /home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/ICM20948/Include/icm20948.h \
- ../Core/Inc/spi.h
+ ../Core/Inc/spi.h \
+ /home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/INA219/Include/ina219.h \
+ /home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/STM-ESP/Include/espuartproto.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -60,3 +62,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 /home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/ICM20948/Include/icm20948.h:
 ../Core/Inc/spi.h:
+/home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/INA219/Include/ina219.h:
+/home/ututo/STM32CubeIDE/workspace_2.0.0/INA219_DC_Sensor/Drivers/STM-ESP/Include/espuartproto.h:
