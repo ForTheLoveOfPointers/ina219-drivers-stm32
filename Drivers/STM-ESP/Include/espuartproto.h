@@ -62,13 +62,35 @@ typedef struct {
 	uint8_t checksum;
 } espuart_t;
 
+// Receiver STATE MACHINE
+typedef enum {
+    RX_WAIT_START,
+    RX_TYPE,
+    RX_LEN,
+    RX_PAYLOAD,
+    RX_CHECKSUM,
+    RX_END
+} ESPUART_RxState;
+
+typedef struct {
+    ESPUART_RxState state;
+    uint8_t buffer[MAX_FRAME_SIZE];
+    uint8_t index;
+    uint8_t expected_len;
+} ESPUART_RxContext;
+
 
 extern UART_HandleTypeDef ESPUART;
 
 HAL_StatusTypeDef ESPUART_Transmit(espuart_t *espuart);
-HAL_StatusTypeDef ESPUART_Recieve(uint8_t *buffer, uint8_t size);
+HAL_StatusTypeDef ESPUART_Recieve(uint8_t *out_buf, uint8_t *out_len);
+
+bool ESPUART_ProcessByte(ESPUART_RxContext *ctx, uint8_t byte);
 
 void ESPUART_Checksum(espuart_t *espuart);
 bool ESPUART_VerifyCheksum(uint8_t *frame_buff, uint8_t sz);
+
+void cast_int16(uint8_t* buf, int16_t data);
+void cast_uint16(uint8_t* buf, uint16_t data);
 
 #endif /* STM_ESP_INCLUDE_ESPUARTPROTO_H_ */

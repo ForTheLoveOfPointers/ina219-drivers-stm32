@@ -2,3 +2,5 @@
 ../Drivers/STM-ESP/Src/espuartproto.c:49:19:ESPUART_Recieve	24	static
 ../Drivers/STM-ESP/Src/espuartproto.c:63:6:ESPUART_VerifyCheksum	24	static
 ../Drivers/STM-ESP/Src/espuartproto.c:76:6:ESPUART_Checksum	24	static
+../Drivers/STM-ESP/Src/espuartproto.c:88:6:cast_int16	16	static
+../Drivers/STM-ESP/Src/espuartproto.c:93:6:cast_uint16	16	static

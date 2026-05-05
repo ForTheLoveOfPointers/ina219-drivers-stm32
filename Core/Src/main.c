@@ -60,8 +60,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void cast_int16(uint8_t* buf, int16_t data);
-void cast_uint16(uint8_t* buf, uint16_t data);
+
 
 /* USER CODE END PFP */
 
@@ -78,13 +77,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	HAL_StatusTypeDef ret = HAL_OK;
 	uint8_t tty_buf[100];
-
-
-	float lsb_constant = 0.004f;
-	float current_lsb = 0.00002f;
-
 	strcpy((char*)tty_buf, "Finished program");
 
   /* USER CODE END 1 */
@@ -119,33 +112,10 @@ int main(void)
 
   HAL_Delay(2000);
 
-  /* CONFIGURE INA219 */
-  /*
-
-  uint8_t ina_write_data[3] = {0x00, 0x01, 0x9F};
-
-  write_ina(&hi2c1, ina_write_data, 500, ret, tty_buf);
-  if(ret != HAL_OK) {
-	strcpy((char*)tty_buf, "Error setting configuration register");
-	HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-	return -1;
-  }
-
-
-  ina_write_data[0] = 0x05;
-  ina_write_data[1] =  0x50;
-  ina_write_data[2] = 0x00;
-  write_ina(&hi2c1, ina_write_data, 500, ret, tty_buf);
-  if(ret != HAL_OK) {
-	  strcpy((char*)tty_buf, "Error setting calibration register");
-	  HAL_UART_Transmit(&huart2, tty_buf, strlen((char*)tty_buf), 500);
-	  return -1;
-  }
-  */
-
   while (1)
   {
 
+	  /* INA219 Power data section */
 	  uint8_t ina_power_buffer[4]; // Stores bus voltage and current data, in that order
 
 	  uint16_t raw_bv = Ina219_ReadBusVoltage();
@@ -352,16 +322,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void cast_int16(uint8_t* buf, int16_t data) {
-	buf[0] = (uint8_t)((data >> 8) & 0xFF); // MSB
-	buf[1] = (uint8_t)(data & 0xFF); // LSB
-}
-
-void cast_uint16(uint8_t* buf, uint16_t data) {
-	buf[0] = (uint8_t)((data >> 8) & 0xFF); // MSB
-	buf[1] = (uint8_t)(data & 0xFF); // LSB
-}
 
 /* USER CODE END 4 */
 
